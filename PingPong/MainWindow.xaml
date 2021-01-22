@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PingPong"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="400" Width="600">
     <Grid>
-
+        <Menu VerticalAlignment="Top">
+            <MenuItem>
+                <MenuItem Header="New Game" Click="NewGame"/>
+                <MenuItem Header="Exit" Click="Exit"/>
+            </MenuItem>
+        </Menu>
+        <Ellipse Name="ellipseBall" Width="40" Height="40" Margin="270,140" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="Blue" />
+        <Rectangle Name="rectanglePad" Width="120" Height="10" Margin="235,350,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="Black" />
     </Grid>
 </Window>
