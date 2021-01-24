@@ -65,20 +65,21 @@ namespace PingPong
                 }
                 else if(ellipseBall.Margin.Top + ellipseBall.Height == rectanglePad.Margin.Top)
                 {
-                    speedFactor *= (float)1.05;
-                    ballNextPosition.Top = 0;
-                    if (ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width / 2)
+                    if (ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width / 2 && ellipseBall.Margin.Left + ellipseBall.Width / 2 >= rectanglePad.Margin.Left)
                     {
+                        speedFactor *= (float)1.05;
+                        ballNextPosition.Top = 0;
                         ballNextPosition.Left -= MWindow.Width / 3;
                     }
-                    else
+                    else if (ellipseBall.Margin.Left + ellipseBall.Width / 2 >= rectanglePad.Margin.Left + rectanglePad.Width / 2 && ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width)
                     {
+                        speedFactor *= (float)1.05;
+                        ballNextPosition.Top = 0;
                         ballNextPosition.Left += MWindow.Width / 3;
                     }
                     AnimateBall();
-                    
                 }
-                else if(ellipseBall.Margin.Top + ellipseBall.Height >= rectanglePad.Margin.Top + rectanglePad.Height)
+                else if(ellipseBall.Margin.Top + ellipseBall.Height >= MWindow.Height)
                 {
                     MessageBox.Show($"Game over. Game laster {(DateTime.Now-startTime).TotalSeconds} seconds.");
                     StopGame();
