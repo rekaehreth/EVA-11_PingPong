@@ -27,13 +27,15 @@ namespace PingPong
         private DateTime startTime;
         private bool isStarted;
         private float speedFactor;
+        private readonly Random rand = new Random();
+
         public MainWindow()
         {
             InitializeComponent();
             ballStartPosition = ellipseBall.Margin;
+            ballNextPosition = new Thickness();
             padStartPosition = rectanglePad.Margin;
             padCurrentPosition = rectanglePad.Margin;
-            ballNextPosition = new Thickness();
             isStarted = false;
             KeyDown += Navigate;
             ellipseBall.LayoutUpdated += BallLayoutUpdated;
@@ -42,38 +44,55 @@ namespace PingPong
         {
             StartGame();
         }
-        /// <summary>
-        /// Szeretnénk kezelni minden esetet, amikor a labda falnak vagy az ütönek ütközik, ezt a labda és az üto Margin attribútumának elemei (Top, Left) és az ablak méretei alapján állapíthatjuk meg. 
-        /// A vesztes eset kivételével minden eset végén hívjuk meg az AnimateBall metódust. 
-        /// A következo eseteket kezeljük: 
-            /// – A labda az ütonek ütközik balról: növeljük meg a labda sebességét 5%-kal! 
-                /// Állítsuk be a ballNextPosition Top propertyjét 0-ra (felfelé akarunk mozogni), a Left propertyjét pedig az eddigi pozícióhoz képest toljuk el pl. -200-zal(ablak szélessége / 3), mert bal felé is szeretnénk haladni. 
-            /// – A labda az ütonek ütközik jobbról: növeljük meg a labda sebességét 5%-kal! 
-                /// Állítsuk be a ballNextPosition Top propertyjét 0-ra (felfelé akarunk mozogni), a Left propertyjét pedig az eddigi pozícióhoz képest toljuk el pl. 200-zal, mert jobb felé is szeretnénk haladni.
-            /// – A labda a tetonek ütközik: a ballNextPosition Top propertyje kapja értékül az ablak magasságát (az ablak alja felé kezdjen mozogni).
-            /// – A labda az ablak bal oldalának ütközik: a ballNextPosition Left propertyje kapja értékül az ablak szélességét(jobbra kezdjen mozogni). 
-            /// – A labda az ablak jobb oldalának ütközik: a ballNextPosition Left legyen 0 (balra kezdjen mozogni). 
-            /// – A labda túlmegy az üton: dobjunk fel egy MessageBox-ot(Show) a “Játék vége” üzenettel, és írjuk ki, hogy hány másodpercig tartott a játék, majd állítsuk meg a játékot.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void BallLayoutUpdated(object sender, EventArgs e)
         {
             if (isStarted)
             {
-
+                if(ellipseBall.Margin.Left == MWindow.Width-ellipseBall.Width)
+                {
+                    ballNextPosition.Left = 0;
+                    AnimateBall();
+                }
+                else if(ellipseBall.Margin.Left == 0)
+                {
+                    ballNextPosition.Left = MWindow.Width;
+                    AnimateBall();
+                }
+                else if(ellipseBall.Margin.Top == MWindow.Height)
+                {
+                    ballNextPosition.Top = MWindow.Height;
+                    AnimateBall();
+                }
+                else if(ellipseBall.Margin.Top + ellipseBall.Height == rectanglePad.Margin.Top)
+                {
+                    speedFactor *= (float)1.05;
+                    ballNextPosition.Top = 0;
+                    if (ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width / 2)
+                    {
+                        ballNextPosition.Left -= MWindow.Width / 3;
+                    }
+                    else
+                    {
+                        ballNextPosition.Left += MWindow.Width / 3;
+                    }
+                    AnimateBall();
+                    
+                }
+                else if(ellipseBall.Margin.Top + ellipseBall.Height >= rectanglePad.Margin.Top + rectanglePad.Height)
+                {
+                    MessageBox.Show($"Game over. Game laster {(DateTime.Now-startTime).TotalSeconds} seconds.");
+                    StopGame();
+                }
             }
         }
         private void Navigate(object sender, KeyEventArgs e)
         {
             padCurrentPosition = rectanglePad.Margin;
-            // **TODO** mit jelent, hogy az üto az ablak bal szélétol távolabb van
-            if (e.Key == Key.Left && padCurrentPosition.Left >= 10)
+            if (e.Key == Key.Left && padCurrentPosition.Left > 0)
             {
                 AnimatePad(-100);
             }
-            // **TODO** mit jelent, hogy az ütő nincs a jobb szélen
-            if (e.Key == Key.Right && padCurrentPosition.Right >= 10)
+            if (e.Key == Key.Right && padCurrentPosition.Left < MWindow.Width - rectanglePad.Width)
             {
                 AnimatePad(100);
             }
@@ -84,9 +103,11 @@ namespace PingPong
         }
         private void StartGame()
         {
+            isStarted = true;
             startTime = DateTime.Now;
             ballCurrentPosition = ballStartPosition;
-            // **TODO** mit jelent, hogy a kezdoiránynak pedig adjunk meg véletlenszeru értékeket? Mi a kezdőirány? 
+            int startPos = rand.Next(0, (int)(MWindow.Width-ellipseBall.Width));
+            ballNextPosition = new Thickness(startPos - ellipseBall.Width / 2, MWindow.Height - ellipseBall.Height - ellipseBall.Height / 2, 0, 0);
             speedFactor = 1;
             AnimateBall();
         }
@@ -110,7 +131,7 @@ namespace PingPong
             padAnimation = new ThicknessAnimation
             {
                 From = padCurrentPosition,
-                To = new Thickness(rectanglePad.Margin.Left + diff, rectanglePad.Margin.Right + diff, 0, 0),
+                To = new Thickness(rectanglePad.Margin.Left + diff, rectanglePad.Margin.Top, 0, 0), 
                 Duration = new Duration(TimeSpan.FromMilliseconds(100)),
             };
             rectanglePad.BeginAnimation(Rectangle.MarginProperty, padAnimation, HandoffBehavior.SnapshotAndReplace);
