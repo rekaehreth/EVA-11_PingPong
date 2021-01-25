@@ -48,40 +48,41 @@ namespace PingPong
         {
             if (isStarted)
             {
-                if(ellipseBall.Margin.Left == MWindow.Width-ellipseBall.Width)
+                if((int)ellipseBall.Margin.Left + ellipseBall.Width >= MWindow.Width - 10)
                 {
                     ballNextPosition.Left = 0;
                     AnimateBall();
                 }
-                else if(ellipseBall.Margin.Left == 0)
+                else if((int)ellipseBall.Margin.Left <= 10)
                 {
                     ballNextPosition.Left = MWindow.Width;
                     AnimateBall();
                 }
-                else if(ellipseBall.Margin.Top == MWindow.Height)
+                else if((int)ellipseBall.Margin.Top <= 10)
                 {
                     ballNextPosition.Top = MWindow.Height;
                     AnimateBall();
                 }
-                else if(ellipseBall.Margin.Top + ellipseBall.Height == rectanglePad.Margin.Top)
+                else if((int)ellipseBall.Margin.Top + ellipseBall.Height >= (int)rectanglePad.Margin.Top)
                 {
-                    if (ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width / 2 && ellipseBall.Margin.Left + ellipseBall.Width / 2 >= rectanglePad.Margin.Left)
+                    if (ellipseBall.Margin.Left + ellipseBall.Width / 2 <= (int)rectanglePad.Margin.Left + rectanglePad.Width / 2 && ellipseBall.Margin.Left + ellipseBall.Width / 2 >= (int)rectanglePad.Margin.Left)
                     {
                         speedFactor *= (float)1.05;
                         ballNextPosition.Top = 0;
                         ballNextPosition.Left -= MWindow.Width / 3;
+                        AnimateBall();
                     }
-                    else if (ellipseBall.Margin.Left + ellipseBall.Width / 2 >= rectanglePad.Margin.Left + rectanglePad.Width / 2 && ellipseBall.Margin.Left + ellipseBall.Width / 2 <= rectanglePad.Margin.Left + rectanglePad.Width)
+                    else if ((int)ellipseBall.Margin.Left + ellipseBall.Width / 2 >= (int)rectanglePad.Margin.Left + rectanglePad.Width / 2 && (int)ellipseBall.Margin.Left + ellipseBall.Width / 2 <= (int)rectanglePad.Margin.Left + rectanglePad.Width)
                     {
                         speedFactor *= (float)1.05;
                         ballNextPosition.Top = 0;
                         ballNextPosition.Left += MWindow.Width / 3;
+                        AnimateBall();
                     }
-                    AnimateBall();
                 }
-                else if(ellipseBall.Margin.Top + ellipseBall.Height >= MWindow.Height)
+                if((int)ellipseBall.Margin.Top + ellipseBall.Height / 2 >= MWindow.Height - ellipseBall.Height)
                 {
-                    MessageBox.Show($"Game over. Game laster {(DateTime.Now-startTime).TotalSeconds} seconds.");
+                    MessageBox.Show($"Game over. Game lasted {(DateTime.Now-startTime).TotalSeconds} seconds.");
                     StopGame();
                 }
             }
